@@ -7,7 +7,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-	<title></title>
+	<title>JS / Elasticsearch Demo</title>
 	<meta name="description" content="">
 	<meta name="author" content="">
 
@@ -58,13 +58,15 @@
                     <h3>Start tracking</h3>
                     <label>River Name</label>
                     <input type="text" name="river" value="default_river" />
+                    <label>Index Name</label>
+                    <input type="text" name="index" value="default_river" />
                     <label>Track</label>
                     <input type="text" name="track" value=""/>
                     <span class="help-block">The terms you want to track</span>
                     <button type="submit" class="btn">Submit</button>
                 </form>
             </div>
-            <div id="stop-track" class="span4" style="display:none">
+            <div id="stop-track" class="span4">
                 <form class="well">
                     <h3>Stop tracking</h3>
                     <p>Tracking is currently active. You can stop at any time.</p>
@@ -73,8 +75,15 @@
                     <button type="submit" class="btn">Stop tracking</button>
                 </form>
             </div>
-            <div class="span4">
+            <div id="trackings" class="span4">
+                <h3>Tracking list</h3>
+                <ul id="trackings-list">
 
+                </ul>
+                <button type="submit" class="btn" id="trackings-refresh">
+                    <i class="icon-refresh"></i>
+                    Refresh
+                </button>
             </div>
         </div>
         <div id="results-container" class="row target" style="display:none">
@@ -108,6 +117,10 @@
                     <p>This configuration will be saved using local storage.</p>
                     <label>Elastic Search URI</label>
                     <input type="text" name="es_uri" />
+                    <label>Twitter Username</label>
+                    <input type="text" name="twitter_user" />
+                    <label>Twitter Password</label>
+                    <input type="password" name="twitter_password" autocomplete="off" />
                     <label>Twitter Consumer Key</label>
                     <input type="text" name="twitter_consumerKey" />
                     <label>Twitter Consumer Secret</label>

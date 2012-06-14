@@ -23,17 +23,26 @@ var elasticSearch = (function(config){
             });
         },
 
-        createTwitterRiver: function(riverName, tracks, bulkSize, success) {
+        createTwitterRiver: function(riverName, tracks, indexName, bulkSize, success) {
+            var twitterConfig;
+            if (!_.isEmpty(config.twitter.user)) {
+                twitterConfig = {
+                    "user" : config.twitter.user,
+                    "password" : config.twitter.password
+                };
+            } else {
+                twitterConfig = {
+                    "oauth" : config.twitterOauth,
+                };
+            }
+            twitterConfig["filter"] = {
+                "tracks" : tracks
+            };
             var riverConfig = {
                 "type" : "twitter",
-                "twitter" : {
-                    "oauth" : config.twitterOauth,
-                    "filter": {
-                        "tracks" : tracks
-                    }
-                },
+                "twitter" : twitterConfig,
                 "index" : {
-                    "index" : riverName,
+                    "index" : indexName,
                     "type" : "status",
                     "bulk_size" : bulkSize
                 }
@@ -45,6 +54,30 @@ var elasticSearch = (function(config){
                 type: 'PUT',
                 success: function(txt) {
                     success(JSON.parse(txt));
+                }
+            });
+        },
+
+        getActiveRivers: function(success) {
+            jQuery.ajax({
+                url: config.uri + "/_river/_search",
+                data: JSON.stringify(this.buildQueryMatchAll(0, 1000)),
+                type: 'GET',
+                success: function(txt) {
+                    data = JSON.parse(txt);
+                    var rivers = {};
+                    _.forEach(data.hits.hits, function(hit) {
+                        if (rivers[hit._type] == undefined) {
+                            rivers[hit._type] = {};
+                        }
+                        rivers[hit._type][hit._id] = hit._source;
+                    });
+                    var riversArray = [];
+                    for (riverName in rivers) {
+                        rivers[riverName].name = riverName;
+                        riversArray.push(rivers[riverName]);
+                    }
+                    success(riversArray);
                 }
             });
         },
